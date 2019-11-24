@@ -10,7 +10,7 @@ Created on 2019年11月20日
 class shunxuzhan():
     def __init__(self,size):
         self.__stack = [None for i in range(size)]
-        print(self.__stack)
+#         print(self.__stack)
         self.__size = size
         self.__count = 0 #栈数据大小
     def pop(self): #出栈
@@ -26,6 +26,15 @@ class shunxuzhan():
             self.__count += 1
         else:
             print('stack full')
+            
+    def clearStack(self):
+        while self.__count:
+            self.pop()
+    
+    def isEmpty(self):
+        if self.__count:
+            return False
+        return True
 if __name__ =='__main__':
     liststack = shunxuzhan(2)
     liststack.pop()
@@ -35,6 +44,5 @@ if __name__ =='__main__':
     liststack.push(1)
     liststack.push(2)
     liststack.push(3)
-    liststack.pop()
-    liststack.pop()
+    liststack.clearStack()
     liststack.pop()
