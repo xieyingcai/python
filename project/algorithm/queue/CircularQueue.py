@@ -15,23 +15,16 @@ class CircularQueue():
     def enQueue(self,value):
         if (self.__tail+1)%self.__size == self.__head:#队满判断
             print('queue full')
-        else:
-            self.__items[self.__tail] = value
-            if self.__tail == (self.__size -1):
-                self.__tail = 0#当尾结点到达队列尾部时，将尾结点置位0
-            else:
-                self.__tail += 1
+            return
+        self.__items[self.__tail] = value
+        self.__tail = (self.__tail+1)%self.__size
     
     def deQueue(self):
         if self.__head == self.__tail:
             return None
-        else:
-            temp = self.__items[self.__head]
-            if self.__head == (self.__size -1):
-                self.__head = 0
-            else:
-                self.__head += 1
-            return temp
+        temp = self.__items[self.__head]
+        self.__head = (self.__head+1)%self.__size
+        return temp
 
 if __name__ == '__main__':
     circularQu = CircularQueue(3)
