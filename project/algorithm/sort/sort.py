@@ -39,7 +39,7 @@ def insert_sort(a):#插入排序
         temp = a[i]
         for j in range(i-1,-2,-1):
             if j >=0 and a[j] > temp:
-                a[j+1] = a[j]
+                a[j+1] = a[j] #数据向后搬移一位
             else:
                 break
         a[j+1] = temp
