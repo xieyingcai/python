@@ -9,6 +9,7 @@
 
 ## linux
 * **[命令集](./linux/命令集.md)**
+* **[shell](./linux/shell.md)**
 
 ## 源码学习
 **locust**  
