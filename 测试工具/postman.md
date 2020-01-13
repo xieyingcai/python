@@ -3,7 +3,7 @@
 通过获取响应，并将响应参数设置为环境变量 
 举例：  
 返回体为： 
-'''json
+```json
 {
     "code": 0,
     "msg": "成功",
@@ -13,9 +13,9 @@
         "foods": null
     }
 }
-'''
+```
 将name字段值设置为categoryName环境变量：  
-'''JavaScrip
+```JavaScrip
 //获取返回值
 var response =JSON.parse(responseBody);
 //判断返回值是否有data参数
@@ -34,4 +34,4 @@ else {
   //如果无则此次验证不通过
   tests["first has data"] = false;
 }
-'''
+```
