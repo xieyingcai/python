@@ -1,5 +1,5 @@
 + TaskSet、TaskSetMeta  
-  编写的测试例一般都会继承与TaskSet，并将该继承了TaskSet的类赋值给类Locust中的task_set属性
+  编写的测试例一般都会继承与TaskSet，并将该继承了TaskSet的类赋值给类Locust中的task_set属性  
   Demo.py  
 ```python
   from locust import HttpLocust, TaskSet
@@ -32,7 +32,7 @@
   TaskSetMeta是一个元类，通过TaskSetMeta来创建Taskset类。Taskset中有tasks属性，通过元类TaskSetMeta重新构造之后，Taskset中的tasks属性有了新的值。  
   该值主要是通过其权重进行多次复制。    
   比如上面的UserBehavior类的tasks属性的值实际上是：[index,index,profile]   
-```
+```python
   class TaskSetMeta(type):
       def __new__(mcs, classname, bases, classDict):
         new_tasks = []
