@@ -11,12 +11,10 @@ def bubble_sort(a):#冒泡排序
     if len < 1:
         return
     made_swap = False
-    for i in range(len-1):
-        for j in range(i,len):
+    for i in range(len):#每经过一次排序，len-i位置上的元素已经排好
+        for j in range(1,len-i):
             if a[j-1] > a[j]:
-                temp = a[j-1]
-                a[j-1] = a[j]
-                a[j] = temp
+                a[j-1],a[j] = a[j],a[j-1]
                 made_swap = True
         if made_swap is False:
             break
