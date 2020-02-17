@@ -10,8 +10,8 @@ def bubble_sort(a):#冒泡排序
     len = a.__len__()
     if len < 1:
         return
-    made_swap = False
     for i in range(len):#每经过一次排序，len-i位置上的元素已经排好
+        made_swap = False
         for j in range(1,len-i):
             if a[j-1] > a[j]:
                 a[j-1],a[j] = a[j],a[j-1]
