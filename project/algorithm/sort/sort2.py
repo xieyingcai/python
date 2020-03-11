@@ -59,7 +59,7 @@ def _partition(a,p,q):#以a中的任意元素为分界点，将数组a分为小�
             temp = a[i]
             a[i] = a[j]
             a[j] = temp
-    a[p],a[i] = a[i],a[p]
+    a[p],a[i] = a[i],a[p] #执行之后a[n]数据已经在正确的位置i上
     _partition(a, p, i)
     _partition(a, i+1, q)
     
