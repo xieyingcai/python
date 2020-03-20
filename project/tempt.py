@@ -5,8 +5,9 @@ Created on 2020年3月16日
 
 @author: Administrator
 '''
+def fun(a):
+    a[0] = 1
 if __name__ == '__main__':
-    a = {1:2,2:3,0:4,0:3}
-    a[4]=4
-    for i in a.keys():
-        print(a[i])
+    a= [0,2]
+    a[0:2] = [1,2]
+    print(a)

@@ -6,15 +6,16 @@ Created on 2019年12月8日
 @author: Administrator
 '''
 import random
+from robot.utils.normalizing import lower
 
-'''
-归并排序
-将数据进行分区，然后对子分区进行排序,利用递归实现
-时间复杂度O(nlog(n))
-空间复杂度O(n)
-非原地排序，稳定的排序算法
-'''
 def guibin_sort(a):
+    '''
+    归并排序
+    将数据进行分区，然后对子分区进行排序,利用递归实现
+    时间复杂度O(nlog(n))
+    空间复杂度O(n)
+    非原地排序，稳定的排序算法
+    '''
     l = a.__len__()
     if l <= 1:
         return a
@@ -38,11 +39,38 @@ def guibin_sort(a):
             m += 1
     a[:] = temp
     return temp
-'''
-思想：通过分区思想，将数据分为小于分界点和大于等于分界点两个区，每一次分区确定一个元素的位置
-难点：分区点刚好是最左边元素时，如何实现分区
-'''
+
+def __merge_sort_between(a,low,high):
+    if low < high:
+        middle = low + (high-low)//2
+        __merge_sort_between(a, low, middle)
+        __merge_sort_between(a, middle+1, high)
+        #进行合并，其中low到middle和middle+1到high都为有序的
+        tem = []
+        i = low
+        j = middle+1
+        while i <= middle and j <=high:
+            if a[i] <= a[j]:
+                tem.append(a[i])
+                i += 1
+            else:
+                tem.append(a[j])
+                j += 1
+        start = i if i <= middle else j
+        end =  middle if i <=middle else high
+        tem.extend(a[start:end+1]) #注意是extend而不是apend，并且是end+1
+        a[low:high+1] = tem
+def merge_sort(a):
+    '''
+    归并排序
+    '''
+    __merge_sort_between(a, 0, len(a)-1)
+                            
 def kuaisu_sort(a):
+    '''
+    思想：通过分区思想，将数据分为小于分界点和大于等于分界点两个区，每一次分区确定一个元素的位置
+    难点：分区点刚好是最左边元素时，如何实现分区
+    '''
     _partition(a,0,len(a))
 def _partition(a,p,q):#以a中的任意元素为分界点，将数组a分为小于a[q-1]和大于等a[q-1]两个部分
     p = p
@@ -70,3 +98,16 @@ if __name__ == '__main__':
     a = [6, 11, -1, 4, 2, 8, 10, 7, 6]
     kuaisu_sort(a)
     print(a)
+    
+    a1 = [3, 5, 6, 7, 8]
+    merge_sort(a1)
+    assert a1 == [3, 5, 6, 7, 8]
+    a2 = [2, 2, 2, 2]
+    merge_sort(a2)
+    assert a2 == [2, 2, 2, 2]
+    a3 = [4, 3, 2, 1]
+    merge_sort(a3)
+    assert a3 == [1, 2, 3, 4]
+    a4 = [5, -1, 9, 3, 7, 8, 3, -2, 9]
+    merge_sort(a4)
+    assert a4 == [-2, -1, 3, 3, 5, 7, 8, 9, 9]
