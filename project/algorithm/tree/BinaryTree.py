@@ -24,7 +24,7 @@ class BinarySerarchTree():
         p = self._root
         while p is not None:
             if p._value == value:
-                return True
+                return p
             elif p._value <= value:
                 p = p._right
             else:
@@ -48,7 +48,58 @@ class BinarySerarchTree():
                 temp._right = insert_node
             else:
                 temp._left = insert_node
-     
+                
+    def delete(self,value):
+        if not self.search(value):
+            print('don not have this node')
+            return
+        p = self.search(value)
+        if p._left is None and p._right is None:#删除节点为叶子节点
+            if p._parent._value <= value:
+                p._parent._right = None #要删除叶子节点为右节点
+                p._parent = None
+            else:
+                p._parent._left = None#要删除叶子节点为左节点
+                p._parent = None
+        elif (p._left is not None) and (p._right is not None):#要删除节点的左右节点不为空
+            temp = p._right
+            min_subNode = None
+            while temp is not None:#找到要删除节点右子树中的最小值
+                min_subNode = temp
+                temp = temp._left
+            if p._parent._value <= value: 
+                p._parent._right = min_subNode#要删除节点为右节点
+            else:
+                p._parent._light = min_subNode
+            min_subNode._left = p._left
+            p._left._parent = min_subNode
+            if min_subNode is not p._right:#如果右子树最小节点不是右节点本身
+                min_subNode._right = p._right
+                p._right._parent = min_subNode
+            min_subNode._parent = p._parent
+            p._parent = None
+            p._leaf = None
+            p._right = None
+        elif p._left is not None:#要删除节点只含有左节点
+            if p._parent._value <= value:#要删除节点为右节点
+                p._parent._right = p._left
+                p._left._parent = p._parent
+            else:
+                p._parent._left = p._left
+                p._left._parent = p._parent
+            p._parent = None
+            p._leaf = None
+        elif p._right is not None:#要删除节点只含有右节点
+            if p._parent._value <= value:#要删除节点为右节点
+                p._parent._right = p._right
+                p._right._parent = p._parent
+            else:
+                p._parent._left = p._right
+                p._right._parent = p._parent
+            p._parent = None
+            p._right = None
+            
+                
     def _in_order(self,node):
         '''
         中序遍历
@@ -79,8 +130,10 @@ class BinarySerarchTree():
                 temp = q.get()
                 if temp[0] is not None:
                     res.append((temp[0]._value,temp[1]))
-                    q.put((temp[0]._left,temp[1]*2))
-                    q.put((temp[0]._right,temp[1]*2+1))
+                    if temp[0]._left is not None:
+                        q.put((temp[0]._left,temp[1]*2))
+                    if temp[0]._right is not None:
+                        q.put((temp[0]._right,temp[1]*2+1))
         return res
 if __name__ == '__main__':
     b = BinarySerarchTree()
@@ -90,4 +143,10 @@ if __name__ == '__main__':
     b.insert(5)
     b.insert(3)
     b.in_order()
+    print(b._bfs())
+    b.delete(3)
+    print(b._bfs())
+    b.delete(4)
+    print(b._bfs())
+    b.delete(2)
     print(b._bfs())
