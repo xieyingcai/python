@@ -25,7 +25,19 @@ def _part(a,low,high):
     a[p],a[low] = a[low],a[p]
     _part(a, low, p-1)
     _part(a, p+1, high)
-if __name__ == '__main__':
-    a = [2,5,4,3,3,2,1]
-    sort_kuai(a)
-    print(a)
+class Solution():
+    # array 二维列表
+    def Find(self, target, array):
+        # write code here
+        i = len(array)-1
+        j = 0
+        while (i>=0 and j<len(array[0])):
+            if array[i][j] == target:
+                return True
+            if array[i][j] > target:
+                i -= 1
+            else:
+                j += 1
+        return False
+s=' helloworld'
+print(s.replace(' ','%20'))

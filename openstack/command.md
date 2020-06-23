@@ -12,3 +12,6 @@ ovs-vsctl add-port br-ens224 ens224 #将端口（网卡）ens224添加到网桥b
     - nova   
     nova list  #列出服务（虚机）  
     nova get-vnc-console uuid novnc #获取ui登录url  
+	- keystone  
+	openstack catalog list #查看keystone提供的服务目录  
+	
