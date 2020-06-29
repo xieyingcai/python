@@ -41,3 +41,19 @@ class Solution():
         return False
 s=' helloworld'
 print(s.replace(' ','%20'))
+
+def fun1(a,p,q):
+    if p<=q:
+        return
+    middle = p + (p-q)//2
+    a[p],a[middle] = a[middle],a[p]
+    n = p
+    for i in range(p,q):
+        if a[i] < a[n]:
+            a[i],a[n] = a[n],a[i]
+            n += 1
+    fun1(a, p, middle)
+    fun1(a, middle, p)
+    
+def fun2(a):
+    fun1(a, 0, len(a)-1)
