@@ -1,3 +1,4 @@
+![](https://github.com/xieyingcai/python/blob/master/locust/Locust.png?raw=true)
 + TaskSet、TaskSetMeta  
   编写的测试例一般都会继承与TaskSet，并将该继承了TaskSet的类赋值给类Locust中的task_set属性  
   Demo.py  
