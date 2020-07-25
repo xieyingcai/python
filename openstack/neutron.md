@@ -2,6 +2,7 @@
 [eventlet] (http://luckylau.tech/2017/03/06/Python%E7%9A%84eventlet%E4%BD%BF%E7%94%A8%E4%B8%8E%E7%90%86%E8%A7%A3/)
 
 +  启动顺序  
+'''python
     neutron-server = neutron.cmd.eventlet.server:main  
 def main():  
     server.boot_server(wsgi_eventlet.eventlet_wsgi_server)  #boot_server执行eventlet_wsgi_server函数  
@@ -120,7 +121,139 @@ class Loader(object):
         try:
             LOG.debug("Loading app %(name)s from %(path)s",
                       {'name': name, 'path': self.config_path})
-            return deploy.loadapp("config:%s" % self.config_path, name=name)
+            return deploy.loadapp("config:%s" % self.config_path, name=name)  #from paste import deploy
         except LookupError:
             LOG.exception("Couldn't lookup app: %s", name)
             raise PasteAppNotFound(name=name, path=self.config_path)
+
+'''
+-----------------------------------------------------------------------------------
+最终的app是由pasteDeploy加载的  
+
+通过配置文件处理后返回最终app  
+
+[composite:neutron]
+use = egg:Paste#urlmap
+/: neutronversions_composite
+/v2.0: neutronapi_v2_0
+
+[composite:neutronapi_v2_0]
+use = call:neutron.auth:pipeline_factory
+noauth = cors http_proxy_to_wsgi request_id catch_errors osprofiler extensions neutronapiapp_v2_0
+keystone = cors http_proxy_to_wsgi request_id catch_errors osprofiler authtoken keystonecontext extensions neutronapiapp_v2_0
+
+[app:neutronapiapp_v2_0]
+paste.app_factory = neutron.api.v2.router:APIRouter.factory
+-----------------------------------------------------------------------------------
+def pipeline_factory(loader, global_conf, **local_conf):
+    """Create a paste pipeline based on the 'auth_strategy' config option."""
+    pipeline = local_conf[cfg.CONF.auth_strategy]#默认是keystone认证方式
+    pipeline = pipeline.split()
+    filters = [loader.get_filter(n) for n in pipeline[:-1]]
+    app = loader.get_app(pipeline[-1]) #即:neutronapiapp_v2_0
+    filters.reverse()
+    for filter in filters:
+        app = filter(app)
+    return app
+-----------------------------------------------------------------------------------
+def APIRouter(**local_config):
+    return pecan_app.v2_factory(None, **local_config)
+def _factory(global_config, **local_config):
+    return pecan_app.v2_factory(global_config, **local_config)
+setattr(APIRouter, 'factory', _factory)#给APIRouter设置属性并赋值为：_factory
+
+-----------------------------------------------------------------------------------
+def v2_factory(global_config, **local_config):
+    # Processing Order:
+    #   As request enters lower priority called before higher.
+    #   Response from controller is passed from higher priority to lower.
+    app_hooks = [
+        hooks.UserFilterHook(),  # priority 90
+        hooks.ContextHook(),  # priority 95
+        hooks.ExceptionTranslationHook(),  # priority 100
+        hooks.BodyValidationHook(),  # priority 120
+        hooks.OwnershipValidationHook(),  # priority 125
+        hooks.QuotaEnforcementHook(),  # priority 130
+        hooks.NotifierHook(),  # priority 135
+        hooks.QueryParametersHook(),  # priority 139
+        hooks.PolicyHook(),  # priority 140
+    ]
+    app = pecan.make_app(root.V2Controller(),
+                         debug=False,
+                         force_canonical=False,
+                         hooks=app_hooks,
+                         guess_content_type_from_ext=True)
+    startup.initialize_all()###########################初始化 Neutron Server
+    return app
+-----------------------------------------------------------------------------------
+class V2Controller(object):
+
+    # Same data structure as neutron.api.versions.Versions for API backward
+    # compatibility
+    version_info = {
+        'id': 'v2.0',
+        'status': 'CURRENT'
+    }
+    _load_version_info(version_info)
+
+    # NOTE(blogan): Paste deploy handled the routing to the legacy extension
+    # controller.  If the extensions filter is removed from the api-paste.ini
+    # then this controller will be routed to  This means operators had
+    # the ability to turn off the extensions controller via tha api-paste but
+    # will not be able to turn it off with the pecan switch.
+    extensions = ext_ctrl.ExtensionsController()
+
+    @utils.expose(generic=True)
+    def index(self):
+        if not pecan.request.path_url.endswith('/'):
+            pecan.abort(404)
+
+        layout = []
+        for name, collection in _CORE_RESOURCES.items():
+            href = urllib.parse.urljoin(pecan.request.path_url, collection)
+            resource = {'name': name,
+                        'collection': collection,
+                        'links': [{'rel': 'self',
+                                   'href': href}]}
+            layout.append(resource)
+        return {'resources': layout}
+
+    @utils.when(index, method='HEAD')
+    @utils.when(index, method='POST')
+    @utils.when(index, method='PATCH')
+    @utils.when(index, method='PUT')
+    @utils.when(index, method='DELETE')
+    def not_supported(self):
+        pecan.abort(405)
+
+    @utils.expose()
+    def _lookup(self, collection, *remainder):
+        # if collection exists in the extension to service plugins map then
+        # we are assuming that collection is the service plugin and
+        # needs to be remapped.
+        # Example: https://neutron.endpoint/v2.0/fwaas/firewall_groups
+        if (remainder and
+                manager.NeutronManager.get_resources_for_path_prefix(
+                    collection)):
+            collection = remainder[0]
+            remainder = remainder[1:]
+        controller = manager.NeutronManager.get_controller_for_resource(
+            collection)
+        if not controller:
+            LOG.warning("No controller found for: %s - returning response "
+                        "code 404", collection)
+            pecan.abort(404)
+        # Store resource and collection names in pecan request context so that
+        # hooks can leverage them if necessary. The following code uses
+        # attributes from the controller instance to ensure names have been
+        # properly sanitized (eg: replacing dashes with underscores)
+        request.context['resource'] = controller.resource
+        request.context['collection'] = controller.collection
+        # NOTE(blogan): initialize a dict to store the ids of the items walked
+        # in the path for example: /networks/1234 would cause uri_identifiers
+        # to contain: {'network_id': '1234'}
+        # This is for backwards compatibility with legacy extensions that
+        # defined their own controllers and expected kwargs to be passed in
+        # with the uri_identifiers
+        request.context['uri_identifiers'] = {}
+        return controller, remainder
