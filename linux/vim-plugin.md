@@ -5,7 +5,7 @@
 yum install gcc gcc-c++ python3 -y
 确认gcc版本：gcc --version  
 因公司的镜像源只能安装4.8.5版本，因此需要离线安装高版本的gcc  
-## gcc离线安装
+gcc离线安装  
 通过github下载gcc源码（我这里的版本是7.2.0），以及其依赖的安装包gmp-6.1.0  
 mpfr-3.1.4 mpc-1.0.3  
 依次编译其依赖包gmp mpfr mpc  
