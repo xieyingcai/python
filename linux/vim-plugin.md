@@ -18,7 +18,7 @@ n/gcc
 ./configure --prefix=/usr \
             --enable-languages=c,c++ \
             --disable-multilib       \
-            --disable-bootstrap
+            --disable-bootstrap  
 make  
 make install  
 安装成功后通过gcc --version查看是否成功  
@@ -33,10 +33,11 @@ git下载最新vim源码包,解压后进入到src目录下
             --enablemultibyte \
             --prefix=/usr  
 make  
-make install
+make install  
 其中--prefix的路径需要和原vim的路劲保持一致，以便于覆盖掉之前的版本  
 确认方法是which vim来确认，比如原有的是/usr/bin/vim 就需要制定prefix为/usr  
 如果make过程有失败，一般是提示依赖包不存在通过yum install XX -y 来解决  
+安装成功后通过vim --version可以看到版本号和其支持的语言  
 
 3. 部署插件  
 下载vundle源码并解压到/root/.vim/bundle/Vundle.vim目录下  
@@ -48,7 +49,7 @@ tagbar
 YouCompleteMe  
 syntastic  
 vim-easymotion  
-其中代码补全插件YouCompleteMe需要编译：
+其中代码补全插件YouCompleteMe需要编译：  
 python3 ~/.vim/bundle/YouCompleteMe/install.py --clang-completer  
 
 至此已安装完毕，通过vim 打开的文件将看到效果，并可以通过修改.vimrc配置文件来修改
@@ -74,9 +75,18 @@ s #打开文件，多个文件垂直排布
 gs #打开上一个s方式打开的文件  
 
 路径节点命令  
-:o #打开关闭目录  
-:O #递归打开目录，也就是也打开子目录  
-:t #打开新的节点  
+o #打开关闭目录  
+O #递归打开目录，也就是也打开子目录  
+t #打开新的节点  
+x #关闭父节点目录,即在子目录/文件系执行，可以关闭所在目录的父目录  
+X #递归关闭子目录,即在父目录执行，可以递归关闭展开的子目录；有着和O相反的作用  
+
+文件系统映射关系  
+C #改变目录的根节点为所选目录  
+u #改变根节点为上一目录  
+U #改变根节点为上一目录,且原根节点依然保持原有展开状态  
+r #刷新光标所在路径的文件  
+R #刷新当前根目录下文件  
 
 ## vim-easymotion
 光标快速移动  
@@ -97,7 +107,7 @@ map <Leader>j <Plug>(easymotion-j)
 map <Leader>k <Plug>(easymotion-k)
 ```
 s #跨窗口搜索字符，然后输入搜索位置，将光标快速移动到相应位置  
-<leader>j #向上移动光标  
+<leader>j #组合键,j向上移动光标  
 <leader>k #向下移动光标  
 
 # vim命令  
@@ -107,10 +117,11 @@ G 移动到文档末尾
 gg 移动到文档开头  
 /word 向下查询 n 查看下一个搜索结果 N查看上一个搜索结果  
 ?word 向下查询 n 查看下一个搜索结果 N查看上一个搜索结果  
-:1,$s,/word1/word2/g 替换第一行到最后一行Word1为Word2  
-:1,$s,/word1/word2/gc 替换第一行到最后一行Word1为Word2,并且在替换时需要确认  
-:10,20s/^/#/g 10行到20行添加注释#  
+:1,$s,/word1/word2/g 1到尾行将Word1替换为Word2,g代表global全局替换的意思  
+:1,$s,/word1/word2/gc c:confirm,代表在替换时需要确认  
+:10,20s/^/#/g 10行到20行添加注释#，^表示行首，$表示行尾  
 :10,20s/#//g 10行到20行删除注释#  
-
+:10,20s#^#//#g 在 10 - 20 行添加 // 注释，为什么用#号分开，而不是替换命令中的/  
+:10,20s#^//##g 取消//注释  
 
 
