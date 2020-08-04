@@ -109,7 +109,7 @@ class Loader(object):
             raise PasteAppNotFound(name=name, path=self.config_path)
 
 ```
------------------------------------------------------------------------------------
+---
 最终的app是由pasteDeploy加载的  
 
 通过配置文件处理后返回最终app  
@@ -127,7 +127,8 @@ keystone = cors http_proxy_to_wsgi request_id catch_errors osprofiler authtoken 
 [app:neutronapiapp_v2_0]
 paste.app_factory = neutron.api.v2.router:APIRouter.factory
 ```
------------------------------------------------------------------------------------
+---
+/neutron/auth.py  
 ```python
 def pipeline_factory(loader, global_conf, **local_conf):
     """Create a paste pipeline based on the 'auth_strategy' config option."""
@@ -140,7 +141,8 @@ def pipeline_factory(loader, global_conf, **local_conf):
         app = filter(app)
     return app
 ```
------------------------------------------------------------------------------------
+---
+/neutron/api/v2/router.py  
 ```python
 def APIRouter(**local_config):
     return pecan_app.v2_factory(None, **local_config)
@@ -148,7 +150,8 @@ def _factory(global_config, **local_config):
     return pecan_app.v2_factory(global_config, **local_config)
 setattr(APIRouter, 'factory', _factory)#给APIRouter设置属性并赋值为：_factory
 ```
------------------------------------------------------------------------------------
+---
+/neutron/pecan_wsgi/app.py  
 ```python
 def v2_factory(global_config, **local_config):
     # Processing Order:
@@ -173,7 +176,8 @@ def v2_factory(global_config, **local_config):
     startup.initialize_all()###########################初始化 Neutron Server
     return app
 ```
------------------------------------------------------------------------------------
+---
+/neutron/pecan_wsgi/controllers/root.py  
 ```python
 class V2Controller(object):
 
