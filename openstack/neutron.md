@@ -127,6 +127,7 @@ class Loader(object):
             raise PasteAppNotFound(name=name, path=self.config_path)
 
 '''
+
 -----------------------------------------------------------------------------------
 最终的app是由pasteDeploy加载的  
 
