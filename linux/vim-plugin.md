@@ -26,7 +26,7 @@ make install
 2. 升级vim  
 因安装的YCM插件需要vim支持Python3，所以需要高版本vim支持，我这升级到了vim8.2  
 git下载最新vim源码包,解压后进入到src目录下  
-./configure --with-feature=huge \
+./configure --with-features=huge \
             --enable-gui=gtk2  \
             --enable-python3interp=yes \
             --enable-cscope \
