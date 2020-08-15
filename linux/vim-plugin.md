@@ -1,8 +1,8 @@
 # vim插件离线安装
 因公司不能git clone代码只能通过下载离线安装包来安装  
 
-1. 安装gcc python3
-yum install gcc gcc-c++ python3 -y
+1. 安装gcc python3  
+yum install gcc gcc-c++ cmake ncurses-devel python3 python3-devel -y
 确认gcc版本：gcc --version  
 因公司的镜像源只能安装4.8.5版本，因此需要离线安装高版本的gcc  
 gcc离线安装  
