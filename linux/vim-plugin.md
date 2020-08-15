@@ -30,7 +30,7 @@ git下载最新vim源码包,解压后进入到src目录下
             --enable-gui=gtk2  \
             --enable-python3interp=yes \
             --enable-cscope \
-            --enablemultibyte \
+            --enable-multibyte \
             --prefix=/usr  
 make  
 make install  
